@@ -65,3 +65,24 @@ spring:
         dialect: org.hibernate.dialect.MySQL8Dialect
         show_sql: false
         format_sql: false
+
+  # 파일 업로드 설정
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+# AWS S3 설정 추가
+cloud:
+  aws:
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
+    s3:
+      bucket: ${S3_BUCKET_NAME}
+    region:
+      static: ap-northeast-2
+      auto: false
+    stack:
+      auto: false
+
+
