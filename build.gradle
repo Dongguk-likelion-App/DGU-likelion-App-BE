@@ -36,6 +36,13 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     runtimeOnly 'com.h2database:h2'
+
+    // AWS S3 SDK v2
+    implementation platform('software.amazon.awssdk:bom:2.21.29')
+    implementation 'software.amazon.awssdk:s3'
+
+    // Spring Cloud AWS (선택사항 - 더 쉬운 설정)
+    implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3:3.0.3'
 }
 
 tasks.named('test') {
