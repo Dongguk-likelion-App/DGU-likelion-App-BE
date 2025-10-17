@@ -42,7 +42,7 @@ jobs:
           username: ubuntu # EC2 사용자 이름
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           script: |
-          # Docker Hub에서 최신 버전의 이미지를 받아옵니다.
+            # Docker Hub에서 최신 버전의 이미지를 받아옵니다.
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/dgu-likelion-app:latest
             
             # 기존에 실행되던 컨테이너를 중지하고 삭제합니다. (오류가 나도 무시하고 진행)
