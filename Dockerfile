@@ -17,8 +17,8 @@ RUN chmod +x ./gradlew
 RUN ./gradlew bootJar -x test
 
 # --- 2. 실행 단계 ---
-# 훨씬 가벼운 JRE 이미지를 최종 실행 환경으로 사용합니다.
-FROM openjdk:17-jre-slim
+# JRE만 포함된 더 작은 이미지 사용
+FROM eclipse-temurin:17-jre
 WORKDIR /app
 
 # 빌드 단계('builder')에서 생성된 JAR 파일을 최종 이미지로 복사합니다.
