@@ -1,0 +1,65 @@
+name: DGU-LIKELION-APP CI/CD
+
+on:
+  push:
+    branches: [ "main" ] # 'main' 브랜치에 코드가 push 될 때마다 실행됩니다.
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest # 이 작업은 가상의 최신 우분투 환경에서 실행됩니다.
+    steps:
+      # 1. GitHub 레포지토리의 코드를 가상 환경으로 내려받습니다.
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Java 17 (Temurin) 환경을 설정합니다.
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # 3. Docker Hub에 로그인합니다. (아래에서 설정할 Secrets 사용)
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # 4. Dockerfile을 사용하여 이미지를 빌드하고 Docker Hub에 푸시합니다.
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/dgu-likelion-app:latest
+
+      # 5. SSH를 통해 EC2 서버에 접속하여 배포 스크립트를 실행합니다.
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu # EC2 사용자 이름
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
+          script: |
+          # Docker Hub에서 최신 버전의 이미지를 받아옵니다.
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/dgu-likelion-app:latest
+            
+            # 기존에 실행되던 컨테이너를 중지하고 삭제합니다. (오류가 나도 무시하고 진행)
+            docker stop dgu-likelion-app || true
+            docker rm dgu-likelion-app || true
+            
+            # 새로운 컨테이너를 백그라운드(-d)로 실행합니다.
+            docker run -d \
+              --name dgu-likelion-app \
+              --restart unless-stopped \
+              --env-file /home/ubuntu/app.env \
+              -p 8080:8080 \
+              ${{ secrets.DOCKERHUB_USERNAME }}/dgu-likelion-app:latest
+            
+            # 사용되지 않는 오래된 Docker 이미지를 삭제하여 서버 용량을 확보합니다.
+            docker image prune -af
+            
+            # 로그 확인 (최근 20줄)
+            echo "===== Application Logs ====="
+            docker logs --tail 20 dgu-likelion-app
