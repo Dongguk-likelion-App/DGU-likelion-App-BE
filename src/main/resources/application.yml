@@ -1,10 +1,9 @@
-
 # 공통 설정
 spring:
   application:
     name: dgu-likelion-app
   profiles:
-    active: local
+    default: local
   jpa:
     properties:
       hibernate:
@@ -17,7 +16,6 @@ server:
 ---
 
 # local 환경 전용 설정
-
 spring:
   config:
     activate:
@@ -31,7 +29,6 @@ spring:
 
   jpa:
     hibernate:
-
       ddl-auto: create-drop
     properties:
       hibernate:
@@ -41,10 +38,26 @@ spring:
       enabled: true
       path: /h2-console
 
+  # 로컬 개발용 AWS S3 설정
+  cloud:
+    aws:
+      credentials:
+        access-key: ${DEV_AWS_ACCESS_KEY}
+        secret-key: ${DEV_AWS_SECRET_KEY}
+      s3:
+        bucket: ${DEV_S3_BUCKET_NAME}
+      region:
+        static: ap-northeast-2
+
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
 ---
 
 # prod(배포) 환경 전용 설정
-
 spring:
   config:
     activate:
@@ -52,7 +65,6 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-
     url: ${DB_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
@@ -66,23 +78,20 @@ spring:
         show_sql: false
         format_sql: false
 
-  # 파일 업로드 설정
   servlet:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
-# AWS S3 설정 추가
-cloud:
-  aws:
-    credentials:
-      access-key: ${AWS_ACCESS_KEY}
-      secret-key: ${AWS_SECRET_KEY}
-    s3:
-      bucket: ${S3_BUCKET_NAME}
-    region:
-      static: ap-northeast-2
-      auto: false
-    stack:
-      auto: false
 
-
+  cloud:
+    aws:
+      credentials:
+        access-key: ${AWS_ACCESS_KEY}
+        secret-key: ${AWS_SECRET_KEY}
+      s3:
+        bucket: ${S3_BUCKET_NAME}
+      region:
+        static: ap-northeast-2
+        auto: false
+      stack:
+        auto: false
