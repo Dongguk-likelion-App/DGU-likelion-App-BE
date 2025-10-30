@@ -47,6 +47,8 @@ dependencies {
 
     // Spring Cloud AWS (선택사항 - 더 쉬운 설정)
     implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3:3.0.3'
+
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'
 }
 
 tasks.named('test') {
