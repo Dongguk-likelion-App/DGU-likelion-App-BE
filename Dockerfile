@@ -1,7 +1,7 @@
 #Dockerfile
 # --- 1. 빌드 단계 ---
 # Java 17 JDK 이미지를 'builder' 라는 이름의 빌드 환경으로 사용합니다.
-FROM openjdk:17-jdk-slim AS builder
+FROM eclipse-temurin:17-jdk-jammy AS builder
 WORKDIR /app
 
 # 빌드에 필요한 파일들만 먼저 복사하여 Docker의 레이어 캐시를 활용합니다.
