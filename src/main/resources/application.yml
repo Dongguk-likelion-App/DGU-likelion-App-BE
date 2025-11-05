@@ -26,6 +26,13 @@ springdoc:
     try-it-out-enabled: true
     display-request-duration: true
 
+# jwt 인증 관련
+jwt:
+  access-secret: ${JWT_ACCESS_SECRET}
+  access-expiration-ms: 3600000   # 1h
+  refresh-secret: ${JWT_REFRESH_SECRET}
+  refresh-expiration-ms: 1209600000  # 14days
+
 ---
 
 # local 환경 전용 설정

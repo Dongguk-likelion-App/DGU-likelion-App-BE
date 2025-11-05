@@ -2,6 +2,7 @@ package com.example.dgu_likelion_app.service.user;
 
 import com.example.dgu_likelion_app.common.HashUtils;
 import com.example.dgu_likelion_app.domain.user.User;
+import com.example.dgu_likelion_app.dto.auth.request.LoginRequest;
 import com.example.dgu_likelion_app.dto.user.SignUpRequest;
 import com.example.dgu_likelion_app.dto.user.UserResponse;
 import com.example.dgu_likelion_app.repository.user.UserRepository;
@@ -59,4 +60,31 @@ public class UserService {
                 saved.getCreatedAt()
         );
     }
+
+    @Transactional(readOnly = true)
+    public User login(LoginRequest req) {
+        // userId로 DB 조회
+        User user = userRepository.findByUserId(req.getUserId())
+                .orElse(null);
+
+        if (user == null) {
+            return null; // 아이디 없음
+        }
+
+        // 비밀번호 체크
+        String hashedInputPw = HashUtils.sha256(req.getPassword());
+        if (!hashedInputPw.equals(user.getPassword())) {
+            return null; // 비번 틀림
+        }
+
+        // 로그인 성공
+        return user;
+    }
+
+    @Transactional(readOnly = true)
+    public User findByUserIdOrThrow(String userId) {
+        return userRepository.findByUserId(userId)
+                .orElseThrow(() -> new IllegalArgumentException("user not found: " + userId));
+    }
+
 }
